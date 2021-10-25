@@ -26,24 +26,26 @@ import reactor.core.publisher.Mono;
 public class UserHandler {
 	
 	private static final String USER_CIRCUIT_BREAKER = "userCircuitBreaker";
-	
+
 	@Autowired
 	UserRepository userRepository;
 
 	// user list by multi user_id
 	@CircuitBreaker(name = USER_CIRCUIT_BREAKER, fallbackMethod = "fallback")
 	public Mono<ServerResponse> userSelectByUserIds(ServerRequest request) {
-		Mono<List<Map<Object,Object>>> acceptData = request.bodyToMono(List.class);
+//		Mono<List<Map<Object,Object>>> acceptData = request.bodyToMono(List.class);
+		Mono<List> acceptData = request.bodyToMono(List.class);
 		return acceptData.flatMap(s -> {
 			// 서킷브레이커 테스트용
 //			if(true) {
 //				return Mono.error(new RuntimeException("failed"));
 //			}
+			List<Map<Object, Object>> list = s;
 			List<String> userIdList = new ArrayList<>();
 			for (int i = 0; i < s.size(); i++) {
-				if(s.get(i).get("userId") != null) {
-					if(!userIdList.contains(s.get(i).get("userId"))) {
-						userIdList.add(s.get(i).get("userId").toString());
+				if(list.get(i).get("userId") != null) {
+					if(!userIdList.contains(list.get(i).get("userId"))) {
+						userIdList.add(list.get(i).get("userId").toString());
 					}
 				}
 			}
@@ -67,7 +69,7 @@ public class UserHandler {
 	// user one by multi user_id
 	@CircuitBreaker(name = USER_CIRCUIT_BREAKER, fallbackMethod = "fallback")
 	public Mono<ServerResponse> userSelectByUserIdOne(ServerRequest request) {
-		Mono<Map<Object,Object>> acceptData = request.bodyToMono(Map.class);
+		Mono<Map> acceptData = request.bodyToMono(Map.class);
 		return acceptData.flatMap(s -> {
 			// 서킷브레이커 테스트용
 //				if(true) {
