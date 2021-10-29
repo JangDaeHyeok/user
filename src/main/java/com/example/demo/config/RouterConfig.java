@@ -17,6 +17,7 @@ public class RouterConfig {
         return RouterFunctions.route()
                 .POST("/user/list/userNm", handler::userSelectByUserIds)
                 .POST("/user/list/userNmOne", handler::userSelectByUserIdOne)
+                .GET("/readiness", handler::userReadiness)
                 .build(); 
     }
 	

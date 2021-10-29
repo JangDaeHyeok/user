@@ -34,8 +34,10 @@ public class UserHandler {
 	@CircuitBreaker(name = USER_CIRCUIT_BREAKER, fallbackMethod = "fallback")
 	public Mono<ServerResponse> userSelectByUserIds(ServerRequest request) {
 //		Mono<List<Map<Object,Object>>> acceptData = request.bodyToMono(List.class);
+		log.error("####### :: user userSelectByUserIds Start :: #######");
 		Mono<List> acceptData = request.bodyToMono(List.class);
 		return acceptData.flatMap(s -> {
+			log.error("####### :: user userSelectByUserIds return AccpetData Start :: #######");
 			// 서킷브레이커 테스트용
 //			if(true) {
 //				return Mono.error(new RuntimeException("failed"));
@@ -49,6 +51,7 @@ public class UserHandler {
 					}
 				}
 			}
+			log.error("####### :: user userSelectByUserIds return AccpetData End :: #######");
 			if(userIdList.size() > 0) {
 				Mono<List<User>> userList = userRepository.findByUsersId(userIdList).collectList();
 				return userList.flatMap(u -> {
@@ -89,6 +92,11 @@ public class UserHandler {
 			err.printStackTrace();
 			return Mono.error(err);
 		});
+	}
+	
+	// 대혁씨 요청
+	public Mono<ServerResponse> userReadiness(ServerRequest request) {
+		return ServerResponse.ok().body(Mono.just("user OK"), String.class);
 	}
 	
 	// circuitbreaker fallback
